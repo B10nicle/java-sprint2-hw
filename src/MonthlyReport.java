@@ -1,6 +1,10 @@
+import org.w3c.dom.ls.LSOutput;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 class MonthlyReport {
@@ -14,6 +18,7 @@ class MonthlyReport {
     }
 
     void getYearReports() {
+        createLineOfStatement(); //удалить
         readYearReports();
         System.out.println("\nЕжегодные отчёты успешно считаны.\n");
     }
@@ -63,7 +68,7 @@ class MonthlyReport {
     }
 
     void printTotalIncomePerMonth() {
-        System.out.println("\nОбщие доходы за " + Month.JANUARY.getMonth() + ": " + totalIncomePerMonth);
+        System.out.println("\nОбщие доходы за " + MonthOfYear.JANUARY.getMonth() + ": " + totalIncomePerMonth);
     }
 
     double totalExpensesPerMonth;
@@ -79,9 +84,8 @@ class MonthlyReport {
     }
 
     void printTotalExpensesPerMonth() {
-        System.out.println("Общие расходы за " + Month.JANUARY.getMonth() + ": " + totalExpensesPerMonth);
+        System.out.println("Общие расходы за " + MonthOfYear.JANUARY.getMonth() + ": " + totalExpensesPerMonth);
     }
-
 
     ArrayList<String> readYearReports() {
         String line;
@@ -104,16 +108,43 @@ class MonthlyReport {
                 if (totalIncomePerYear == totalIncomePerMonth) {
                     System.out.println("Ежемесячные и ежегодные доходы сошлись!");
                 } else {
-                    System.out.println("Извините, ежемесячная сумма доходов за январь не сходится с суммой дохода, указанной в ежегодном отчёте.");
+                    System.out.println("Извините, ежемесячная сумма доходов за " + MonthOfYear.JANUARY.getMonth() + " не сходится с суммой дохода, указанной в ежегодном отчёте.");
                 }
             } else if (columns[0].equals("01") && columns[2].equalsIgnoreCase("true")) { //значит это расход за январь
                 double totalExpensesPerYear = Double.parseDouble(columns[1]);
                 if (totalExpensesPerYear == totalExpensesPerMonth) {
                     System.out.println("Ежемесячные и ежегодные расходы сошлись!\n");
                 } else {
-                    System.out.println("Извините, ежемесячная сумма расходов за январь не сходится с суммой расходов, указанной в ежегодном отчёте.\n");
+                    System.out.println("Извините, ежемесячная сумма расходов за " + MonthOfYear.JANUARY.getMonth() + " не сходится с суммой расходов, указанной в ежегодном отчёте.\n");
                 }
             }
+        }
+    }
+
+
+    LineOfStatement lineOfStatement;
+    ArrayList<LineOfStatement> linesOfStatement = new ArrayList<>();
+
+    void createLineOfStatement() {
+        try {
+            String data = new String(Files.readAllBytes(Paths.get("resources/m.202101.csv")));
+            String[] lines = data.split(System.lineSeparator());
+            String[] clean = new String[lines.length - 1];
+            for (int i = 1; i < lines.length; i++) {
+                clean[i - 1] = lines[i];
+            }
+
+            for (String line : clean) {
+                String[] columns = line.split(",");
+                linesOfStatement.add(new LineOfStatement(columns[0], Boolean.parseBoolean(columns[1]), Integer.parseInt(columns[2]), Double.parseDouble(columns[3])));
+            }
+
+            for (LineOfStatement line : linesOfStatement) {
+                System.out.println(line.getQuantity() * line.getSumOfOne());
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
