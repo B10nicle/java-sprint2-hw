@@ -3,13 +3,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 class Settings {
-    final static byte MONTHS = 12;
+    final static byte AVAILABLE_MONTHS = 3;
 
     static void showMenu() {
         String userInput = "";
         boolean MonthsReportsHaveNotBeenRead = true;
         boolean YearsReportsHaveNotBeenRead = true;
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+        MonthlyReport[] monthlyReports;
         printMenu();
         try {
             userInput = bufferedReader.readLine();
@@ -18,16 +19,13 @@ class Settings {
         }
         while (true) {
             if (userInput.equals("1")) {
-                MonthlyReport[] monthlyReports = new MonthlyReport[12];
-                for (int i = 0; i < MONTHS; i++) {
+                monthlyReports = new MonthlyReport[AVAILABLE_MONTHS];
+                for (int i = 0; i < AVAILABLE_MONTHS; i++) {
                     if (i < 9) {
                         monthlyReports[i] = new MonthlyReport(i + 1, "resources/m.20210" + (i + 1) + ".csv");
-                    } else if (i >= 9) {
+                    } else {
                         monthlyReports[i] = new MonthlyReport(i + 1, "resources/m.2021" + (i + 1) + ".csv");
                     }
-                }
-                for (MonthlyReport monthlyReport : monthlyReports) {
-                    System.out.println(monthlyReport);
                 }
                 System.out.println("\nЕжемесячные отчёты успешно считаны.\n");
                 MonthsReportsHaveNotBeenRead = false;
