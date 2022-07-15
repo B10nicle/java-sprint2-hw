@@ -1,103 +1,47 @@
-import org.w3c.dom.ls.LSOutput;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.ArrayList;
 
 class MonthlyReport {
-    private static final byte MONTHS = 3;
+    ArrayList<MonthlyRecord> data = new ArrayList<>();
 
-    void getMonthReports() {
-        readMonthReport();
-        getTotalIncomePerMonth();
-        getTotalExpensesPerMonth();
-        System.out.println("\nЕжемесячные отчёты успешно считаны.\n");
-    }
-
-    void getYearReports() {
-        createLineOfStatement(); //удалить
-        readYearReports();
-        System.out.println("\nЕжегодные отчёты успешно считаны.\n");
-    }
-
-    void checkAllReports() {
-        printTotalIncomePerMonth();
-        printTotalExpensesPerMonth();
-        getTotalPerYear(totalIncomePerMonth, totalExpensesPerMonth);
-    }
-
-    String[] getFileNames() {
-        String[] fileNames = new String[MONTHS];
-        for (int i = 0; i < MONTHS; i++) {
-            String fileName = "resources/m.20210" + (i + 1) + ".csv";
-            fileNames[i] = fileName;
+    public MonthlyReport(int numberOfMonth, String path) {
+        String content = readFileContentsOrNull(path);
+        assert content != null;
+        String[] lines = content.split(System.lineSeparator());
+        for (int i = 1; i < lines.length; i++) {
+            String line = lines[i];
+            String[] parts = line.split(",");
+            String itemName = parts[0];
+            boolean isExpense = Boolean.parseBoolean(parts[1]);
+            int quantity = Integer.parseInt(parts[2]);
+            int sumOfOne = Integer.parseInt(parts[3]);
+            data.add(new MonthlyRecord(itemName, isExpense, quantity, sumOfOne));
         }
-        return fileNames;
     }
 
-    ArrayList<String> monthsData = new ArrayList<>();
-    ArrayList<String> yearsData = new ArrayList<>();
-
-    ArrayList<String> readMonthReport() {
-        String line;
+    private String readFileContentsOrNull(String path) {
         try {
-            BufferedReader bufferedReader = new BufferedReader(new FileReader("resources/m.202101" + ".csv"));
-            while ((line = bufferedReader.readLine()) != null) {
-                monthsData.add(line);
-            }
+            return Files.readString(Path.of(path));
         } catch (IOException e) {
-            System.out.println("\nНевозможно прочитать файл с месячным отчётом. Возможно, файл не находится в нужной директории.\n");
+            System.out.println("Невозможно прочитать файл с месячным отчётом. Возможно, файл не находится в нужной директории.");
+            return null;
         }
-        return monthsData;
     }
+}
 
 
-    double totalIncomePerMonth;
 
-    double getTotalIncomePerMonth() {
-        totalIncomePerMonth = 0;
-        for (String element : monthsData) {
-            String[] columns = element.split(",");
-            if (columns[1].equalsIgnoreCase("false")) //значит это доходы
-                totalIncomePerMonth += Double.parseDouble(columns[2]) * Double.parseDouble(columns[3]);
-        }
-        return totalIncomePerMonth;
-    }
 
+
+/*
     void printTotalIncomePerMonth() {
         System.out.println("\nОбщие доходы за " + MonthOfYear.JANUARY.getMonth() + ": " + totalIncomePerMonth);
     }
 
-    double totalExpensesPerMonth;
-
-    double getTotalExpensesPerMonth() {
-        totalExpensesPerMonth = 0;
-        for (String element : monthsData) {
-            String[] columns = element.split(",");
-            if (columns[1].equalsIgnoreCase("true"))
-                totalExpensesPerMonth += Double.parseDouble(columns[2]) * Double.parseDouble(columns[3]);
-        }
-        return totalExpensesPerMonth;
-    }
-
     void printTotalExpensesPerMonth() {
         System.out.println("Общие расходы за " + MonthOfYear.JANUARY.getMonth() + ": " + totalExpensesPerMonth);
-    }
-
-    ArrayList<String> readYearReports() {
-        String line;
-        try {
-            BufferedReader bufferedReader = new BufferedReader(new FileReader("resources/y.2021" + ".csv"));
-            while ((line = bufferedReader.readLine()) != null) {
-                yearsData.add(line);
-            }
-        } catch (IOException e) {
-            System.out.println("\nНевозможно прочитать файл с месячным отчётом. Возможно, файл не находится в нужной директории.\n");
-        }
-        return yearsData;
     }
 
     void getTotalPerYear(double totalIncomePerMonth, double totalExpensesPerMonth) {
@@ -121,9 +65,7 @@ class MonthlyReport {
         }
     }
 
-
-    LineOfStatement lineOfStatement;
-    ArrayList<LineOfStatement> linesOfStatement = new ArrayList<>();
+    ArrayList<MonthlyRecord> january = new ArrayList<>();
 
     void createLineOfStatement() {
         try {
@@ -136,15 +78,15 @@ class MonthlyReport {
 
             for (String line : clean) {
                 String[] columns = line.split(",");
-                linesOfStatement.add(new LineOfStatement(columns[0], Boolean.parseBoolean(columns[1]), Integer.parseInt(columns[2]), Double.parseDouble(columns[3])));
+                january.add(new MonthlyRecord(columns[0], Boolean.parseBoolean(columns[1]), Integer.parseInt(columns[2]), Integer.parseInt(columns[3])));
             }
 
-            for (LineOfStatement line : linesOfStatement) {
-                System.out.println(line.getQuantity() * line.getSumOfOne());
+            for (MonthlyRecord record : january) {
+                System.out.println(record.getQuantity() * record.getSumOfOne());
             }
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-}
+*/

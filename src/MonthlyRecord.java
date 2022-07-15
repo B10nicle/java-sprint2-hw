@@ -1,10 +1,10 @@
-public class LineOfStatement {
+public class MonthlyRecord {
     private String itemName;
     private boolean isExpense;
     private int quantity;
-    private double sumOfOne;
+    private int sumOfOne;
 
-    public LineOfStatement(String itemName, boolean isExpense, int quantity, double sumOfOne) {
+    public MonthlyRecord(String itemName, boolean isExpense, int quantity, int sumOfOne) {
         this.itemName = itemName;
         this.isExpense = isExpense;
         this.quantity = quantity;
@@ -44,7 +44,7 @@ public class LineOfStatement {
         return sumOfOne;
     }
 
-    public void setSumOfOne(double sumOfOne) {
+    public void setSumOfOne(int sumOfOne) {
         this.sumOfOne = sumOfOne;
     }
 }
