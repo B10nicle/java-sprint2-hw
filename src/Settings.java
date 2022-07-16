@@ -27,23 +27,23 @@ public class Settings {
                 YearsReportsHaveNotBeenRead = false;
             } else if (userInput.equals("3")) {
                 if (MonthsReportsHaveNotBeenRead || YearsReportsHaveNotBeenRead) {
-                    System.out.println("\nИзвините, предварительно необходимо считать все месячные и ежегодные отчёты.\n");
+                    System.out.println("\nИзвините, предварительно необходимо считать все месячные и " +
+                            "ежегодные отчёты.\n");
                 } else {
-                    //if ()
-                    System.out.println("Все ОК!");
+                    annualReport.compareMonthlyAndAnnualIncome(monthlyReport.monthlyReports);
+                    annualReport.compareMonthlyAndAnnualExpenses(monthlyReport.monthlyReports);
                 }
             } else if (userInput.equals("4")) {
                 if (MonthsReportsHaveNotBeenRead) {
                     System.out.println("\nИзвините, предварительно необходимо считать все месячные отчёты.\n");
                 } else {
-                    monthlyReport.totalIncomePerMonth(monthlyReport.monthlyReports);
-                    monthlyReport.totalExpensesPerMonth(monthlyReport.monthlyReports);
+                    monthlyReport.printMonthlyInfo(monthlyReport.monthlyReports);
                 }
             } else if (userInput.equals("5")) {
                 if (YearsReportsHaveNotBeenRead) {
                     System.out.println("\nИзвините, предварительно необходимо считать все годовые отчёты.\n");
                 } else {
-                    annualReport.printTable(annualReport.annualReports);
+                    annualReport.printAnnualInfo(annualReport.annualReports);
                 }
             } else if (userInput.equals("6")) {
                 System.out.println("Программа завершена");

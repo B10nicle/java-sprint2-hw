@@ -2,11 +2,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class AnnualReport {
     final static byte AVAILABLE_YEARS = 1;
     private static int firstYearOfReadyAnnualReport = 2021;
     ArrayList<AnnualRecord> annualRecords = new ArrayList<>();
+    HashMap<Integer, Integer> totalIncomePerYear = new HashMap<>();
+    HashMap<Integer, Integer> totalExpensesPerYear = new HashMap<>();
+    MonthlyReport monthlyReport = new MonthlyReport();
     AnnualReport[] annualReports;
     int year;
 
@@ -40,7 +44,7 @@ public class AnnualReport {
     public void getAnnualReports() {
         annualReports = new AnnualReport[AVAILABLE_YEARS];
         for (int i = 0; i < AVAILABLE_YEARS; i++) {
-            annualReports[i] = new AnnualReport(i + firstYearOfReadyAnnualReport, "resources/y.20" + (i + 21) + ".csv");
+            annualReports[i] = new AnnualReport(firstYearOfReadyAnnualReport + i, "resources/y." + (firstYearOfReadyAnnualReport + i) + ".csv");
         }
     }
 
@@ -48,9 +52,79 @@ public class AnnualReport {
         System.out.println("\nЕжегодные отчёты успешно считаны.\n");
     }
 
-    public void printTable(AnnualReport[] annualReports) {
-        for (AnnualReport annualReport : annualReports) {
-            System.out.println(annualReport.annualRecords);
+    private HashMap<Integer, Integer> getTotalIncomePerYear() {
+        for (int i = 0; i < annualReports.length; i++) {
+            for (int j = 0; j < annualReports[i].annualRecords.size(); j++) {
+                if (!annualReports[i].annualRecords.get(j).isExpense()) {
+                    int monthNumber = annualReports[i].annualRecords.get(j).getMonthNumber();
+                    int amount = annualReports[i].annualRecords.get(j).getAmount();
+                    totalIncomePerYear.put(monthNumber, amount);
+                }
+            }
+        }
+        return totalIncomePerYear;
+    }
+
+    public void compareMonthlyAndAnnualIncome(MonthlyReport[] monthlyReports) {
+        HashMap<Integer, Integer> totalIncomePerYear = getTotalIncomePerYear();
+        int[] totalIncomePerMonth = monthlyReport.totalIncomePerMonth(monthlyReports);
+        for (int i = 0; i < totalIncomePerYear.values().size(); i++) {
+            if (!(totalIncomePerMonth[i] == totalIncomePerYear.get(i + 1))) {
+                System.out.println("Обнаружено расхождение доходов в месяце №" +
+                        (i + 1) + "(" + MonthlyReport.monthsOfYear[i] + "): " +
+                        totalIncomePerMonth[i] + " не равно " + totalIncomePerYear.get(i + 1) + ".");
+            } else {
+                System.out.println("Операция завершена успешно. Расхождений в доходах в месяце №" +
+                        (i + 1) + "(" + MonthlyReport.monthsOfYear[i] + ") не обнаружено.\n");
+            }
+        }
+    }
+
+    private HashMap<Integer, Integer> getTotalExpensesPerYear() {
+        for (int i = 0; i < annualReports.length; i++) {
+            for (int j = 0; j < annualReports[i].annualRecords.size(); j++) {
+                if (annualReports[i].annualRecords.get(j).isExpense()) {
+                    int monthNumber = annualReports[i].annualRecords.get(j).getMonthNumber();
+                    int amount = annualReports[i].annualRecords.get(j).getAmount();
+                    totalExpensesPerYear.put(monthNumber, amount);
+                }
+            }
+        }
+        return totalExpensesPerYear;
+    }
+
+    public void compareMonthlyAndAnnualExpenses(MonthlyReport[] monthlyReports) {
+        HashMap<Integer, Integer> totalExpensesPerYear = getTotalExpensesPerYear();
+        int[] totalExpensesPerMonth = monthlyReport.totalExpensesPerMonth(monthlyReports);
+        for (int i = 0; i < totalExpensesPerYear.values().size(); i++) {
+            if (!(totalExpensesPerMonth[i] == totalExpensesPerYear.get(i + 1))) {
+                System.out.println("Обнаружено расхождение расходов в месяце №" +
+                        (i + 1) + "(" + MonthlyReport.monthsOfYear[i] + "): " +
+                        totalExpensesPerMonth[i] + " не равно " + totalExpensesPerYear.get(i + 1) + ".");
+            } else {
+                System.out.println("Операция завершена успешно. Расхождений в расходах в месяце №" +
+                        (i + 1) + "(" + MonthlyReport.monthsOfYear[i] + ") не обнаружено.\n");
+            }
+        }
+    }
+
+    public void printAnnualInfo(AnnualReport[] annualReports) {
+        getTotalIncomePerYear();
+        getTotalExpensesPerYear();
+        for (int i = 0; i < annualReports.length; i++) {
+            int averageIncome = 0;
+            int averageExpenses = 0;
+            System.out.println("\nРассматриваемый год: " + (firstYearOfReadyAnnualReport + i));
+            for (int j = 0; j < annualReports[i].annualRecords.size(); j++) {
+                if (totalIncomePerYear.get(j + 1) != null || totalExpensesPerYear.get(j + 1) != null) {
+                    System.out.println("Прибыль за " + MonthlyReport.monthsOfYear[j] + ": " +
+                            (totalIncomePerYear.get(j + 1) - totalExpensesPerYear.get(j + 1)));
+                    averageIncome += totalIncomePerYear.get(j + 1);
+                    averageExpenses += totalExpensesPerYear.get(j + 1);
+                }
+            }
+            System.out.println("Средний доход за все месяцы в году: " + averageIncome / MonthlyReport.AVAILABLE_MONTHS);
+            System.out.println("Средний расход за все месяцы в году: " + averageExpenses / MonthlyReport.AVAILABLE_MONTHS + "\n");
         }
     }
 

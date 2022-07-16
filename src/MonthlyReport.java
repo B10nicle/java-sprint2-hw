@@ -2,13 +2,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 class MonthlyReport {
     final static byte AVAILABLE_MONTHS = 3;
     ArrayList<MonthlyRecord> monthlyRecords = new ArrayList<>();
     MonthlyReport[] monthlyReports;
     int numberOfMonth;
+    final static String[] monthsOfYear = {"январь", "февраль", "март",
+            "апрель", "май", "июнь", "июль", "август",
+            "сентябрь", "октябрь", "ноябрь", "декабрь"};
 
     public MonthlyReport(int numberOfMonth, String path) {
         this.numberOfMonth = numberOfMonth;
@@ -42,9 +44,11 @@ class MonthlyReport {
         monthlyReports = new MonthlyReport[AVAILABLE_MONTHS];
         for (int i = 0; i < AVAILABLE_MONTHS; i++) {
             if (i < 9) {
-                monthlyReports[i] = new MonthlyReport(i + 1, "resources/m.20210" + (i + 1) + ".csv");
+                monthlyReports[i] = new MonthlyReport(i + 1,
+                        "resources/m.20210" + (i + 1) + ".csv");
             } else {
-                monthlyReports[i] = new MonthlyReport(i + 1, "resources/m.2021" + (i + 1) + ".csv");
+                monthlyReports[i] = new MonthlyReport(i + 1,
+                        "resources/m.2021" + (i + 1) + ".csv");
             }
         }
     }
@@ -58,12 +62,11 @@ class MonthlyReport {
         for (int i = 0; i < monthlyReports.length; i++) {
             for (int j = 0; j < monthlyReports[i].monthlyRecords.size(); j++) {
                 if (!monthlyReports[i].monthlyRecords.get(j).isExpense()) {
-                    totalIncome[i] += monthlyReports[i].monthlyRecords.get(j).getQuantity() * monthlyReports[i].monthlyRecords.get(j).getSumOfOne();
+                    totalIncome[i] += monthlyReports[i].monthlyRecords.get(j).getQuantity() *
+                            monthlyReports[i].monthlyRecords.get(j).getSumOfOne();
                 }
             }
-            System.out.println("Общие доходы за месяц №" + monthlyReports[i].numberOfMonth + ": " + totalIncome[i]);
         }
-        System.out.println(Arrays.toString(totalIncome));
         return totalIncome;
     }
 
@@ -72,12 +75,41 @@ class MonthlyReport {
         for (int i = 0; i < monthlyReports.length; i++) {
             for (int j = 0; j < monthlyReports[i].monthlyRecords.size(); j++) {
                 if (monthlyReports[i].monthlyRecords.get(j).isExpense()) {
-                    totalExpenses[i] += monthlyReports[i].monthlyRecords.get(j).getQuantity() * monthlyReports[i].monthlyRecords.get(j).getSumOfOne();
+                    totalExpenses[i] += monthlyReports[i].monthlyRecords.get(j).getQuantity() *
+                            monthlyReports[i].monthlyRecords.get(j).getSumOfOne();
                 }
             }
-            System.out.println("Общие расходы за месяц №" + monthlyReports[i].numberOfMonth + ": " + totalExpenses[i]);
         }
-        System.out.println(Arrays.toString(totalExpenses));
         return totalExpenses;
+    }
+
+    public void printMonthlyInfo(MonthlyReport[] monthlyReports) {
+        for (int i = 0; i < monthlyReports.length; i++) {
+            int maxIncome = 0;
+            int maxExpenses = 0;
+            String nameOfMaxIncome = "";
+            String nameOfMaxExpenses = "";
+            for (int j = 0; j < monthlyReports[i].monthlyRecords.size(); j++) {
+                if (!monthlyReports[i].monthlyRecords.get(j).isExpense()) {
+                    int income = monthlyReports[i].monthlyRecords.get(j).getQuantity() *
+                            monthlyReports[i].monthlyRecords.get(j).getSumOfOne();
+                    if (income > maxIncome) {
+                        maxIncome = income;
+                        nameOfMaxIncome = monthlyReports[i].monthlyRecords.get(j).getItemName();
+                    }
+                } else {
+                    int expenses = monthlyReports[i].monthlyRecords.get(j).getQuantity() *
+                            monthlyReports[i].monthlyRecords.get(j).getSumOfOne();
+                    if (expenses > maxExpenses) {
+                        maxExpenses = expenses;
+                        nameOfMaxExpenses = monthlyReports[i].monthlyRecords.get(j).getItemName();
+                    }
+                }
+            }
+            System.out.println("Самый прибыльный товар за " + monthsOfYear[i] + ": " +
+                    nameOfMaxIncome + ". " + "Сумма прибыли: " + maxIncome);
+            System.out.println("Самая большая трата за " + monthsOfYear[i] + ": " +
+                    nameOfMaxExpenses + ". " + "Сумма траты: " + maxExpenses + "\n");
+        }
     }
 }
