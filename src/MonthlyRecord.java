@@ -11,6 +11,10 @@ public class MonthlyRecord {
         this.sumOfOne = sumOfOne;
     }
 
+    public MonthlyRecord() {
+
+    }
+
     @Override
     public String toString() {
         return itemName + " " + isExpense + " " + quantity + " " + sumOfOne;
@@ -40,7 +44,7 @@ public class MonthlyRecord {
         this.quantity = quantity;
     }
 
-    public double getSumOfOne() {
+    public int getSumOfOne() {
         return sumOfOne;
     }
 

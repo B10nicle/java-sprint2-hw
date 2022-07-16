@@ -2,15 +2,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-class Settings {
-    final static byte AVAILABLE_MONTHS = 3;
-
-    static void showMenu() {
+public class Settings {
+    public static void main(String[] args) {
         String userInput = "";
         boolean MonthsReportsHaveNotBeenRead = true;
         boolean YearsReportsHaveNotBeenRead = true;
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
-        MonthlyReport[] monthlyReports;
+        MonthlyReport monthlyReport = new MonthlyReport();
+        AnnualReport annualReport = new AnnualReport();
         printMenu();
         try {
             userInput = bufferedReader.readLine();
@@ -19,37 +18,32 @@ class Settings {
         }
         while (true) {
             if (userInput.equals("1")) {
-                monthlyReports = new MonthlyReport[AVAILABLE_MONTHS];
-                for (int i = 0; i < AVAILABLE_MONTHS; i++) {
-                    if (i < 9) {
-                        monthlyReports[i] = new MonthlyReport(i + 1, "resources/m.20210" + (i + 1) + ".csv");
-                    } else {
-                        monthlyReports[i] = new MonthlyReport(i + 1, "resources/m.2021" + (i + 1) + ".csv");
-                    }
-                }
-                System.out.println("\nЕжемесячные отчёты успешно считаны.\n");
+                monthlyReport.getMonthlyReports();
+                monthlyReport.printResultOfReadingMonthlyReports();
                 MonthsReportsHaveNotBeenRead = false;
             } else if (userInput.equals("2")) {
-                AnnualReport annualReport = new AnnualReport(2021, "resources/y.2021.csv");
-                System.out.println("\nЕжегодные отчёты успешно считаны.\n");
+                annualReport.getAnnualReports();
+                annualReport.printResultOfReadingAnnualReports();
                 YearsReportsHaveNotBeenRead = false;
             } else if (userInput.equals("3")) {
                 if (MonthsReportsHaveNotBeenRead || YearsReportsHaveNotBeenRead) {
                     System.out.println("\nИзвините, предварительно необходимо считать все месячные и ежегодные отчёты.\n");
                 } else {
-                    //добавить
+                    //if ()
+                    System.out.println("Все ОК!");
                 }
             } else if (userInput.equals("4")) {
                 if (MonthsReportsHaveNotBeenRead) {
                     System.out.println("\nИзвините, предварительно необходимо считать все месячные отчёты.\n");
                 } else {
-                    //добавить
+                    monthlyReport.totalIncomePerMonth(monthlyReport.monthlyReports);
+                    monthlyReport.totalExpensesPerMonth(monthlyReport.monthlyReports);
                 }
             } else if (userInput.equals("5")) {
                 if (YearsReportsHaveNotBeenRead) {
                     System.out.println("\nИзвините, предварительно необходимо считать все годовые отчёты.\n");
                 } else {
-                    //добавить
+                    annualReport.printTable(annualReport.annualReports);
                 }
             } else if (userInput.equals("6")) {
                 System.out.println("Программа завершена");

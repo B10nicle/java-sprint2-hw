@@ -4,8 +4,11 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 
 public class AnnualReport {
+    final static byte AVAILABLE_YEARS = 1;
+    private static int firstYearOfReadyAnnualReport = 2021;
+    ArrayList<AnnualRecord> annualRecords = new ArrayList<>();
+    AnnualReport[] annualReports;
     int year;
-    ArrayList<AnnualRecord> data = new ArrayList<>();
 
     public AnnualReport(int year, String path) {
         this.year = year;
@@ -18,8 +21,11 @@ public class AnnualReport {
             int month = Integer.parseInt(parts[0]);
             int amount = Integer.parseInt(parts[1]);
             boolean isExpense = Boolean.parseBoolean(parts[2]);
-            data.add(new AnnualRecord(month, amount, isExpense));
+            annualRecords.add(new AnnualRecord(month, amount, isExpense));
         }
+    }
+
+    public AnnualReport() {
     }
 
     private String readFileContentsOrNull(String path) {
@@ -29,5 +35,30 @@ public class AnnualReport {
             System.out.println("Невозможно прочитать файл с годовым отчётом. Возможно, файл не находится в нужной директории.");
             return null;
         }
+    }
+
+    public void getAnnualReports() {
+        annualReports = new AnnualReport[AVAILABLE_YEARS];
+        for (int i = 0; i < AVAILABLE_YEARS; i++) {
+            annualReports[i] = new AnnualReport(i + firstYearOfReadyAnnualReport, "resources/y.20" + (i + 21) + ".csv");
+        }
+    }
+
+    public void printResultOfReadingAnnualReports() {
+        System.out.println("\nЕжегодные отчёты успешно считаны.\n");
+    }
+
+    public void printTable(AnnualReport[] annualReports) {
+        for (AnnualReport annualReport : annualReports) {
+            System.out.println(annualReport.annualRecords);
+        }
+    }
+
+    public static int getFirstYearOfReadyAnnualReport() {
+        return firstYearOfReadyAnnualReport;
+    }
+
+    public static void setFirstYearOfReadyAnnualReport(int firstYearOfReadyAnnualReport) {
+        AnnualReport.firstYearOfReadyAnnualReport = firstYearOfReadyAnnualReport;
     }
 }

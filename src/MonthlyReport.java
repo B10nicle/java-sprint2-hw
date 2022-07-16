@@ -2,11 +2,16 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 class MonthlyReport {
-    ArrayList<MonthlyRecord> data = new ArrayList<>();
+    final static byte AVAILABLE_MONTHS = 3;
+    ArrayList<MonthlyRecord> monthlyRecords = new ArrayList<>();
+    MonthlyReport[] monthlyReports;
+    int numberOfMonth;
 
     public MonthlyReport(int numberOfMonth, String path) {
+        this.numberOfMonth = numberOfMonth;
         String content = readFileContentsOrNull(path);
         assert content != null;
         String[] lines = content.split(System.lineSeparator());
@@ -17,8 +22,11 @@ class MonthlyReport {
             boolean isExpense = Boolean.parseBoolean(parts[1]);
             int quantity = Integer.parseInt(parts[2]);
             int sumOfOne = Integer.parseInt(parts[3]);
-            data.add(new MonthlyRecord(itemName, isExpense, quantity, sumOfOne));
+            monthlyRecords.add(new MonthlyRecord(itemName, isExpense, quantity, sumOfOne));
         }
+    }
+
+    public MonthlyReport() {
     }
 
     private String readFileContentsOrNull(String path) {
@@ -29,64 +37,47 @@ class MonthlyReport {
             return null;
         }
     }
+
+    public void getMonthlyReports() {
+        monthlyReports = new MonthlyReport[AVAILABLE_MONTHS];
+        for (int i = 0; i < AVAILABLE_MONTHS; i++) {
+            if (i < 9) {
+                monthlyReports[i] = new MonthlyReport(i + 1, "resources/m.20210" + (i + 1) + ".csv");
+            } else {
+                monthlyReports[i] = new MonthlyReport(i + 1, "resources/m.2021" + (i + 1) + ".csv");
+            }
+        }
+    }
+
+    public void printResultOfReadingMonthlyReports() {
+        System.out.println("\nЕжемесячные отчёты успешно считаны.\n");
+    }
+
+    public int[] totalIncomePerMonth(MonthlyReport[] monthlyReports) {
+        int[] totalIncome = new int[AVAILABLE_MONTHS];
+        for (int i = 0; i < monthlyReports.length; i++) {
+            for (int j = 0; j < monthlyReports[i].monthlyRecords.size(); j++) {
+                if (!monthlyReports[i].monthlyRecords.get(j).isExpense()) {
+                    totalIncome[i] += monthlyReports[i].monthlyRecords.get(j).getQuantity() * monthlyReports[i].monthlyRecords.get(j).getSumOfOne();
+                }
+            }
+            System.out.println("Общие доходы за месяц №" + monthlyReports[i].numberOfMonth + ": " + totalIncome[i]);
+        }
+        System.out.println(Arrays.toString(totalIncome));
+        return totalIncome;
+    }
+
+    public int[] totalExpensesPerMonth(MonthlyReport[] monthlyReports) {
+        int[] totalExpenses = new int[AVAILABLE_MONTHS];
+        for (int i = 0; i < monthlyReports.length; i++) {
+            for (int j = 0; j < monthlyReports[i].monthlyRecords.size(); j++) {
+                if (monthlyReports[i].monthlyRecords.get(j).isExpense()) {
+                    totalExpenses[i] += monthlyReports[i].monthlyRecords.get(j).getQuantity() * monthlyReports[i].monthlyRecords.get(j).getSumOfOne();
+                }
+            }
+            System.out.println("Общие расходы за месяц №" + monthlyReports[i].numberOfMonth + ": " + totalExpenses[i]);
+        }
+        System.out.println(Arrays.toString(totalExpenses));
+        return totalExpenses;
+    }
 }
-
-
-
-
-
-/*
-    void printTotalIncomePerMonth() {
-        System.out.println("\nОбщие доходы за " + MonthOfYear.JANUARY.getMonth() + ": " + totalIncomePerMonth);
-    }
-
-    void printTotalExpensesPerMonth() {
-        System.out.println("Общие расходы за " + MonthOfYear.JANUARY.getMonth() + ": " + totalExpensesPerMonth);
-    }
-
-    void getTotalPerYear(double totalIncomePerMonth, double totalExpensesPerMonth) {
-        for (String element : yearsData) {
-            String[] columns = element.split(",");
-            if (columns[0].equals("01") && columns[2].equalsIgnoreCase("false")) { //значит это доход за январь
-                double totalIncomePerYear = Double.parseDouble(columns[1]);
-                if (totalIncomePerYear == totalIncomePerMonth) {
-                    System.out.println("Ежемесячные и ежегодные доходы сошлись!");
-                } else {
-                    System.out.println("Извините, ежемесячная сумма доходов за " + MonthOfYear.JANUARY.getMonth() + " не сходится с суммой дохода, указанной в ежегодном отчёте.");
-                }
-            } else if (columns[0].equals("01") && columns[2].equalsIgnoreCase("true")) { //значит это расход за январь
-                double totalExpensesPerYear = Double.parseDouble(columns[1]);
-                if (totalExpensesPerYear == totalExpensesPerMonth) {
-                    System.out.println("Ежемесячные и ежегодные расходы сошлись!\n");
-                } else {
-                    System.out.println("Извините, ежемесячная сумма расходов за " + MonthOfYear.JANUARY.getMonth() + " не сходится с суммой расходов, указанной в ежегодном отчёте.\n");
-                }
-            }
-        }
-    }
-
-    ArrayList<MonthlyRecord> january = new ArrayList<>();
-
-    void createLineOfStatement() {
-        try {
-            String data = new String(Files.readAllBytes(Paths.get("resources/m.202101.csv")));
-            String[] lines = data.split(System.lineSeparator());
-            String[] clean = new String[lines.length - 1];
-            for (int i = 1; i < lines.length; i++) {
-                clean[i - 1] = lines[i];
-            }
-
-            for (String line : clean) {
-                String[] columns = line.split(",");
-                january.add(new MonthlyRecord(columns[0], Boolean.parseBoolean(columns[1]), Integer.parseInt(columns[2]), Integer.parseInt(columns[3])));
-            }
-
-            for (MonthlyRecord record : january) {
-                System.out.println(record.getQuantity() * record.getSumOfOne());
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-*/
