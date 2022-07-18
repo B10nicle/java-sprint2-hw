@@ -1,6 +1,3 @@
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 
 class MonthlyReport {
@@ -12,9 +9,10 @@ class MonthlyReport {
             "апрель", "май", "июнь", "июль", "август",
             "сентябрь", "октябрь", "ноябрь", "декабрь"};
 
+    //тоже самое что и с AnnualReport, сделал по аналогии после вебинара с Филиппом Ворониным
     public MonthlyReport(int numberOfMonth, String path) {
         this.numberOfMonth = numberOfMonth;
-        String content = readFileContentsOrNull(path);
+        String content = InputAndFileReader.readFileContentsOrNull(path);
         assert content != null;
         String[] lines = content.split(System.lineSeparator());
         for (int i = 1; i < lines.length; i++) {
@@ -28,19 +26,12 @@ class MonthlyReport {
         }
     }
 
+    //базовый(пустой) конструктор, так как переопределяю конструктор класса по умолчанию
     public MonthlyReport() {
     }
 
-    private String readFileContentsOrNull(String path) {
-        try {
-            return Files.readString(Path.of(path));
-        } catch (IOException e) {
-            System.out.println("Невозможно прочитать файл с месячным отчётом. Возможно, файл не находится в нужной директории.");
-            return null;
-        }
-    }
-
-    public void getMonthlyReports() {
+    //считываю ежемесячные отчеты из папки resources
+    public MonthlyReport[] readMonthlyReports() {
         monthlyReports = new MonthlyReport[AVAILABLE_MONTHS];
         for (int i = 0; i < AVAILABLE_MONTHS; i++) {
             if (i < 9) {
@@ -51,13 +42,16 @@ class MonthlyReport {
                         "resources/m.2021" + (i + 1) + ".csv");
             }
         }
+        return monthlyReports;
     }
 
+    //печатаю в консоль результат если ежемесячные отчеты из папки resources загружены успешно
     public void printResultOfReadingMonthlyReports() {
         System.out.println("\nЕжемесячные отчёты успешно считаны.\n");
     }
 
-    public int[] totalIncomePerMonth(MonthlyReport[] monthlyReports) {
+    //создаю массив только с доходами за месяц
+    public int[] getTotalIncomePerMonth(MonthlyReport[] monthlyReports) {
         int[] totalIncome = new int[AVAILABLE_MONTHS];
         for (int i = 0; i < monthlyReports.length; i++) {
             for (int j = 0; j < monthlyReports[i].monthlyRecords.size(); j++) {
@@ -70,7 +64,8 @@ class MonthlyReport {
         return totalIncome;
     }
 
-    public int[] totalExpensesPerMonth(MonthlyReport[] monthlyReports) {
+    //создаю массив только с расходами за месяц
+    public int[] getTotalExpensesPerMonth(MonthlyReport[] monthlyReports) {
         int[] totalExpenses = new int[AVAILABLE_MONTHS];
         for (int i = 0; i < monthlyReports.length; i++) {
             for (int j = 0; j < monthlyReports[i].monthlyRecords.size(); j++) {
@@ -83,6 +78,7 @@ class MonthlyReport {
         return totalExpenses;
     }
 
+    //печатаю ежемесячный отчет для пункта меню №4
     public void printMonthlyInfo(MonthlyReport[] monthlyReports) {
         for (int i = 0; i < monthlyReports.length; i++) {
             int maxIncome = 0;

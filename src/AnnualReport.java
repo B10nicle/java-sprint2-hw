@@ -1,10 +1,7 @@
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class AnnualReport {
+class AnnualReport {
     final static byte AVAILABLE_YEARS = 1;
     private static int firstYearOfReadyAnnualReport = 2021;
     ArrayList<AnnualRecord> annualRecords = new ArrayList<>();
@@ -14,9 +11,10 @@ public class AnnualReport {
     AnnualReport[] annualReports;
     int year;
 
+    //данный фрагмент кода(конструктор) был предоставлен Филиппом Ворониным на вебинаре к этому спринту
     public AnnualReport(int year, String path) {
         this.year = year;
-        String content = readFileContentsOrNull(path);
+        String content = InputAndFileReader.readFileContentsOrNull(path);
         assert content != null;
         String[] lines = content.split(System.lineSeparator());
         for (int i = 1; i < lines.length; i++) {
@@ -29,85 +27,85 @@ public class AnnualReport {
         }
     }
 
+    //базовый(пустой) конструктор, так как переопределяю конструктор класса по умолчанию
     public AnnualReport() {
     }
 
-    private String readFileContentsOrNull(String path) {
-        try {
-            return Files.readString(Path.of(path));
-        } catch (IOException e) {
-            System.out.println("Невозможно прочитать файл с годовым отчётом. Возможно, файл не находится в нужной директории.");
-            return null;
-        }
-    }
-
-    public void getAnnualReports() {
+    //считываю ежегодные отчеты из папки resources
+    public void readAnnualReports() {
         annualReports = new AnnualReport[AVAILABLE_YEARS];
         for (int i = 0; i < AVAILABLE_YEARS; i++) {
-            annualReports[i] = new AnnualReport(firstYearOfReadyAnnualReport + i, "resources/y." + (firstYearOfReadyAnnualReport + i) + ".csv");
+            annualReports[i] = new AnnualReport(firstYearOfReadyAnnualReport + i,
+                    "resources/y." + (firstYearOfReadyAnnualReport + i) + ".csv");
         }
     }
 
+    //печатаю в консоль результат если ежегодные отчеты из папки resources загружены успешно
     public void printResultOfReadingAnnualReports() {
         System.out.println("\nЕжегодные отчёты успешно считаны.\n");
     }
 
+    //создаю маппу с данными по доходам за год (ключ - номер месяца, значение - размер дохода)
     private HashMap<Integer, Integer> getTotalIncomePerYear() {
         for (int i = 0; i < annualReports.length; i++) {
             for (int j = 0; j < annualReports[i].annualRecords.size(); j++) {
                 if (!annualReports[i].annualRecords.get(j).isExpense()) {
-                    int monthNumber = annualReports[i].annualRecords.get(j).getMonthNumber();
+                    int month = annualReports[i].annualRecords.get(j).getMonth();
                     int amount = annualReports[i].annualRecords.get(j).getAmount();
-                    totalIncomePerYear.put(monthNumber, amount);
+                    totalIncomePerYear.put(month, amount);
                 }
             }
         }
         return totalIncomePerYear;
     }
 
+    //сравниваю ежемесячные и ежегодные доходы + печатаю результат по итогу сравнения
     public void compareMonthlyAndAnnualIncome(MonthlyReport[] monthlyReports) {
         HashMap<Integer, Integer> totalIncomePerYear = getTotalIncomePerYear();
-        int[] totalIncomePerMonth = monthlyReport.totalIncomePerMonth(monthlyReports);
+        int[] totalIncomePerMonth = monthlyReport.getTotalIncomePerMonth(monthlyReports);
         for (int i = 0; i < totalIncomePerYear.values().size(); i++) {
             if (!(totalIncomePerMonth[i] == totalIncomePerYear.get(i + 1))) {
                 System.out.println("Обнаружено расхождение доходов в месяце №" +
                         (i + 1) + "(" + MonthlyReport.monthsOfYear[i] + "): " +
                         totalIncomePerMonth[i] + " не равно " + totalIncomePerYear.get(i + 1) + ".");
             } else {
-                System.out.println("Операция завершена успешно. Расхождений в доходах в месяце №" +
+                System.out.println("Расхождений доходов в месяце №" +
                         (i + 1) + "(" + MonthlyReport.monthsOfYear[i] + ") не обнаружено.\n");
             }
         }
     }
 
+    //создаю маппу с данными по расходам за год (ключ - номер месяца, значение - размер расходов)
     private HashMap<Integer, Integer> getTotalExpensesPerYear() {
         for (int i = 0; i < annualReports.length; i++) {
             for (int j = 0; j < annualReports[i].annualRecords.size(); j++) {
                 if (annualReports[i].annualRecords.get(j).isExpense()) {
-                    int monthNumber = annualReports[i].annualRecords.get(j).getMonthNumber();
+                    int month = annualReports[i].annualRecords.get(j).getMonth();
                     int amount = annualReports[i].annualRecords.get(j).getAmount();
-                    totalExpensesPerYear.put(monthNumber, amount);
+                    totalExpensesPerYear.put(month, amount);
                 }
             }
         }
         return totalExpensesPerYear;
     }
 
+    //сравниваю ежемесячные и ежегодные расходы + печатаю результат по итогу сравнения
     public void compareMonthlyAndAnnualExpenses(MonthlyReport[] monthlyReports) {
         HashMap<Integer, Integer> totalExpensesPerYear = getTotalExpensesPerYear();
-        int[] totalExpensesPerMonth = monthlyReport.totalExpensesPerMonth(monthlyReports);
+        int[] totalExpensesPerMonth = monthlyReport.getTotalExpensesPerMonth(monthlyReports);
         for (int i = 0; i < totalExpensesPerYear.values().size(); i++) {
             if (!(totalExpensesPerMonth[i] == totalExpensesPerYear.get(i + 1))) {
                 System.out.println("Обнаружено расхождение расходов в месяце №" +
                         (i + 1) + "(" + MonthlyReport.monthsOfYear[i] + "): " +
                         totalExpensesPerMonth[i] + " не равно " + totalExpensesPerYear.get(i + 1) + ".");
             } else {
-                System.out.println("Операция завершена успешно. Расхождений в расходах в месяце №" +
+                System.out.println("Расхождений расходов в месяце №" +
                         (i + 1) + "(" + MonthlyReport.monthsOfYear[i] + ") не обнаружено.\n");
             }
         }
     }
 
+    //печатаю ежегодный отчет для пункта меню №5
     public void printAnnualInfo(AnnualReport[] annualReports) {
         getTotalIncomePerYear();
         getTotalExpensesPerYear();
@@ -128,10 +126,12 @@ public class AnnualReport {
         }
     }
 
+    //геттер для firstYearOfReadyAnnualReport, первого года, с которого будет начинаться программа, сейчас это 2021 год
     public static int getFirstYearOfReadyAnnualReport() {
         return firstYearOfReadyAnnualReport;
     }
 
+    //сеттер для firstYearOfReadyAnnualReport
     public static void setFirstYearOfReadyAnnualReport(int firstYearOfReadyAnnualReport) {
         AnnualReport.firstYearOfReadyAnnualReport = firstYearOfReadyAnnualReport;
     }
