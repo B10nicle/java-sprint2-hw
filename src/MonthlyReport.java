@@ -3,7 +3,7 @@ import java.util.ArrayList;
 class MonthlyReport {
     final static byte AVAILABLE_MONTHS = 3;
     ArrayList<MonthlyRecord> monthlyRecords = new ArrayList<>();
-    MonthlyReport[] monthlyReports;
+    private static boolean monthReportsHaveNotBeenRead = true;
     int numberOfMonth;
     final static String[] monthsOfYear = {"январь", "февраль", "март",
             "апрель", "май", "июнь", "июль", "август",
@@ -13,7 +13,6 @@ class MonthlyReport {
     public MonthlyReport(int numberOfMonth, String path) {
         this.numberOfMonth = numberOfMonth;
         String content = InputAndFileReader.readFileContentsOrNull(path);
-        assert content != null;
         String[] lines = content.split(System.lineSeparator());
         for (int i = 1; i < lines.length; i++) {
             String line = lines[i];
@@ -32,7 +31,7 @@ class MonthlyReport {
 
     //считываю ежемесячные отчеты из папки resources
     public MonthlyReport[] readMonthlyReports() {
-        monthlyReports = new MonthlyReport[AVAILABLE_MONTHS];
+        MonthlyReport[] monthlyReports = new MonthlyReport[AVAILABLE_MONTHS];
         for (int i = 0; i < AVAILABLE_MONTHS; i++) {
             if (i < 9) {
                 monthlyReports[i] = new MonthlyReport(i + 1,
@@ -46,7 +45,7 @@ class MonthlyReport {
     }
 
     //печатаю в консоль результат если ежемесячные отчеты из папки resources загружены успешно
-    public void printResultOfReadingMonthlyReports() {
+    private void printResultOfReadingMonthlyReports() {
         System.out.println("\nЕжемесячные отчёты успешно считаны.\n");
     }
 
@@ -107,5 +106,26 @@ class MonthlyReport {
             System.out.println("Самая большая трата за " + monthsOfYear[i] + ": " +
                     nameOfMaxExpenses + ". " + "Сумма траты: " + maxExpenses + "\n");
         }
+    }
+
+    //проверка были ли считаны все месячные отчеты
+    public void printMonthlyInfoIfMonthlyReportsAreOK(MonthlyReport[] monthlyReports) {
+        if (monthReportsHaveNotBeenRead) {
+            System.out.println("\nИзвините, предварительно необходимо считать все месячные отчёты.\n");
+        } else {
+            printMonthlyInfo(monthlyReports);
+        }
+    }
+
+    //считывание всех месячных отчетов + печать результата + флаг
+    public void getMonthlyReports() {
+        readMonthlyReports();
+        printResultOfReadingMonthlyReports();
+        monthReportsHaveNotBeenRead = false;
+    }
+
+    //геттер для monthsReportsHaveNotBeenRead
+    public boolean isMonthReportsHaveNotBeenRead() {
+        return monthReportsHaveNotBeenRead;
     }
 }

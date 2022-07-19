@@ -7,6 +7,7 @@ class AnnualReport {
     ArrayList<AnnualRecord> annualRecords = new ArrayList<>();
     HashMap<Integer, Integer> totalIncomePerYear = new HashMap<>();
     HashMap<Integer, Integer> totalExpensesPerYear = new HashMap<>();
+    private static boolean yearReportsHaveNotBeenRead = true;
     MonthlyReport monthlyReport = new MonthlyReport();
     AnnualReport[] annualReports;
     int year;
@@ -15,7 +16,6 @@ class AnnualReport {
     public AnnualReport(int year, String path) {
         this.year = year;
         String content = InputAndFileReader.readFileContentsOrNull(path);
-        assert content != null;
         String[] lines = content.split(System.lineSeparator());
         for (int i = 1; i < lines.length; i++) {
             String line = lines[i];
@@ -41,7 +41,7 @@ class AnnualReport {
     }
 
     //печатаю в консоль результат если ежегодные отчеты из папки resources загружены успешно
-    public void printResultOfReadingAnnualReports() {
+    private void printResultOfReadingAnnualReports() {
         System.out.println("\nЕжегодные отчёты успешно считаны.\n");
     }
 
@@ -126,6 +126,39 @@ class AnnualReport {
         }
     }
 
+    //проверка были ли считаны все ежегодные отчеты
+    public void printAnnualInfoIfAnnualReportsAreOK() {
+        if (yearReportsHaveNotBeenRead) {
+            System.out.println("\nИзвините, предварительно необходимо считать все годовые отчёты.\n");
+        } else {
+            printAnnualInfo(annualReports);
+        }
+    }
+
+    //проверка были ли считаны все ежегодные и месячные отчеты
+    public void printComparisonIfReportsAreOK() {
+        if (monthlyReport.isMonthReportsHaveNotBeenRead() || isYearReportsHaveNotBeenRead()) {
+            System.out.println("\nИзвините, предварительно необходимо считать все месячные и " +
+                    "ежегодные отчёты.\n");
+        } else {
+            compareMonthlyAndAnnualIncome(monthlyReport.readMonthlyReports());
+            compareMonthlyAndAnnualExpenses(monthlyReport.readMonthlyReports());
+        }
+    }
+
+    //считывание всех ежегодных отчетов + печать результата + флаг
+    public void getAnnualReports() {
+        readAnnualReports();
+        printResultOfReadingAnnualReports();
+        yearReportsHaveNotBeenRead = false;
+    }
+
+    private void checkIfAnnualReportIsNotNull(AnnualReport[] annualReports) {
+        if (annualReports == null) {
+            System.out.println("Невозможно прочитать файл с отчётом. Возможно, файл не находится в нужной директории.");
+        }
+    }
+
     //геттер для firstYearOfReadyAnnualReport, первого года, с которого будет начинаться программа, сейчас это 2021 год
     public static int getFirstYearOfReadyAnnualReport() {
         return firstYearOfReadyAnnualReport;
@@ -134,5 +167,10 @@ class AnnualReport {
     //сеттер для firstYearOfReadyAnnualReport
     public static void setFirstYearOfReadyAnnualReport(int firstYearOfReadyAnnualReport) {
         AnnualReport.firstYearOfReadyAnnualReport = firstYearOfReadyAnnualReport;
+    }
+
+    //геттер для yearsReportsHaveNotBeenRead
+    public static boolean isYearReportsHaveNotBeenRead() {
+        return yearReportsHaveNotBeenRead;
     }
 }

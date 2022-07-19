@@ -2,45 +2,25 @@ public class Main {
     public static void main(String[] args) {
         MonthlyReport monthlyReport = new MonthlyReport();
         AnnualReport annualReport = new AnnualReport();
-        boolean MonthsReportsHaveNotBeenRead = true;
-        boolean YearsReportsHaveNotBeenRead = true;
         printMenu();
         String userInput = InputAndFileReader.readUserInput();
         label:
         while (true) {
             switch (userInput) {
                 case "1":
-                    monthlyReport.readMonthlyReports();
-                    monthlyReport.printResultOfReadingMonthlyReports();
-                    MonthsReportsHaveNotBeenRead = false;
+                    monthlyReport.getMonthlyReports();
                     break;
                 case "2":
-                    annualReport.readAnnualReports();
-                    annualReport.printResultOfReadingAnnualReports();
-                    YearsReportsHaveNotBeenRead = false;
+                    annualReport.getAnnualReports();
                     break;
                 case "3":
-                    if (MonthsReportsHaveNotBeenRead || YearsReportsHaveNotBeenRead) {
-                        System.out.println("\nИзвините, предварительно необходимо считать все месячные и " +
-                                "ежегодные отчёты.\n");
-                    } else {
-                        annualReport.compareMonthlyAndAnnualIncome(monthlyReport.monthlyReports);
-                        annualReport.compareMonthlyAndAnnualExpenses(monthlyReport.monthlyReports);
-                    }
+                    annualReport.printComparisonIfReportsAreOK();
                     break;
                 case "4":
-                    if (MonthsReportsHaveNotBeenRead) {
-                        System.out.println("\nИзвините, предварительно необходимо считать все месячные отчёты.\n");
-                    } else {
-                        monthlyReport.printMonthlyInfo(monthlyReport.monthlyReports);
-                    }
+                    monthlyReport.printMonthlyInfoIfMonthlyReportsAreOK(monthlyReport.readMonthlyReports());
                     break;
                 case "5":
-                    if (YearsReportsHaveNotBeenRead) {
-                        System.out.println("\nИзвините, предварительно необходимо считать все годовые отчёты.\n");
-                    } else {
-                        annualReport.printAnnualInfo(annualReport.annualReports);
-                    }
+                    annualReport.printAnnualInfoIfAnnualReportsAreOK();
                     break;
                 case "6":
                     System.out.println("Программа завершена");

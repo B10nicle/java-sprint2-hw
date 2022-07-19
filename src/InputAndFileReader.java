@@ -5,7 +5,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 class InputAndFileReader {
-    //код данного метода предоставлен в самом ТЗ к этому спринту
+    //Уважаемый Эркин, данный метод readFileContentsOrNull был предоставлен в самом ТЗ к спринту и, как я понимаю, должен
+    //крашить программу если файл не обнаружен по задумке авторов данного спринта
+
     //считывание содержимого файла
     public static String readFileContentsOrNull(String path) {
         try {
