@@ -16,6 +16,9 @@ class AnnualReport {
     public AnnualReport(int year, String path) {
         this.year = year;
         String content = InputAndFileReader.readFileContentsOrNull(path);
+        if (!content.equals("")) {
+            System.out.println("Ежегодный отчёт успешно считан.\n");
+        }
         String[] lines = content.split(System.lineSeparator());
         for (int i = 1; i < lines.length; i++) {
             String line = lines[i];
@@ -38,11 +41,6 @@ class AnnualReport {
             annualReports[i] = new AnnualReport(firstYearOfReadyAnnualReport + i,
                     "resources/y." + (firstYearOfReadyAnnualReport + i) + ".csv");
         }
-    }
-
-    //печатаю в консоль результат если ежегодные отчеты из папки resources загружены успешно
-    private void printResultOfReadingAnnualReports() {
-        System.out.println("\nЕжегодные отчёты успешно считаны.\n");
     }
 
     //создаю маппу с данными по доходам за год (ключ - номер месяца, значение - размер дохода)
@@ -136,27 +134,20 @@ class AnnualReport {
     }
 
     //проверка были ли считаны все ежегодные и месячные отчеты
-    public void printComparisonIfReportsAreOK() {
+    public void printComparisonIfReportsAreOK(MonthlyReport[] monthlyReports) {
         if (monthlyReport.isMonthReportsHaveNotBeenRead() || isYearReportsHaveNotBeenRead()) {
             System.out.println("\nИзвините, предварительно необходимо считать все месячные и " +
                     "ежегодные отчёты.\n");
         } else {
-            compareMonthlyAndAnnualIncome(monthlyReport.readMonthlyReports());
-            compareMonthlyAndAnnualExpenses(monthlyReport.readMonthlyReports());
+            compareMonthlyAndAnnualIncome(monthlyReports);
+            compareMonthlyAndAnnualExpenses(monthlyReports);
         }
     }
 
-    //считывание всех ежегодных отчетов + печать результата + флаг
+    //считывание всех ежегодных отчетов + флаг
     public void getAnnualReports() {
         readAnnualReports();
-        printResultOfReadingAnnualReports();
         yearReportsHaveNotBeenRead = false;
-    }
-
-    private void checkIfAnnualReportIsNotNull(AnnualReport[] annualReports) {
-        if (annualReports == null) {
-            System.out.println("Невозможно прочитать файл с отчётом. Возможно, файл не находится в нужной директории.");
-        }
     }
 
     //геттер для firstYearOfReadyAnnualReport, первого года, с которого будет начинаться программа, сейчас это 2021 год

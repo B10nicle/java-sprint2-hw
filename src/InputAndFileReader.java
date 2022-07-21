@@ -5,16 +5,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 class InputAndFileReader {
-    //Уважаемый Эркин, данный метод readFileContentsOrNull был предоставлен в самом ТЗ к спринту и, как я понимаю, должен
-    //крашить программу если файл не обнаружен по задумке авторов данного спринта
-
     //считывание содержимого файла
     public static String readFileContentsOrNull(String path) {
         try {
             return Files.readString(Path.of(path));
         } catch (IOException e) {
-            System.out.println("Невозможно прочитать файл с отчётом. Возможно, файл не находится в нужной директории.");
-            return null;
+            System.out.println("Невозможно прочитать файл с отчётом. Возможно, файл не находится в нужной директории.\n");
+            return "";
         }
     }
 

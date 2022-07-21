@@ -5,6 +5,7 @@ class MonthlyReport {
     ArrayList<MonthlyRecord> monthlyRecords = new ArrayList<>();
     private static boolean monthReportsHaveNotBeenRead = true;
     int numberOfMonth;
+    MonthlyReport[] monthlyReports;
     final static String[] monthsOfYear = {"январь", "февраль", "март",
             "апрель", "май", "июнь", "июль", "август",
             "сентябрь", "октябрь", "ноябрь", "декабрь"};
@@ -13,6 +14,9 @@ class MonthlyReport {
     public MonthlyReport(int numberOfMonth, String path) {
         this.numberOfMonth = numberOfMonth;
         String content = InputAndFileReader.readFileContentsOrNull(path);
+        if (!content.equals("")) {
+            System.out.println("Ежемесячный отчёт успешно считан.\n");
+        }
         String[] lines = content.split(System.lineSeparator());
         for (int i = 1; i < lines.length; i++) {
             String line = lines[i];
@@ -30,8 +34,8 @@ class MonthlyReport {
     }
 
     //считываю ежемесячные отчеты из папки resources
-    public MonthlyReport[] readMonthlyReports() {
-        MonthlyReport[] monthlyReports = new MonthlyReport[AVAILABLE_MONTHS];
+    public void readMonthlyReports() {
+        monthlyReports = new MonthlyReport[AVAILABLE_MONTHS];
         for (int i = 0; i < AVAILABLE_MONTHS; i++) {
             if (i < 9) {
                 monthlyReports[i] = new MonthlyReport(i + 1,
@@ -41,12 +45,6 @@ class MonthlyReport {
                         "resources/m.2021" + (i + 1) + ".csv");
             }
         }
-        return monthlyReports;
-    }
-
-    //печатаю в консоль результат если ежемесячные отчеты из папки resources загружены успешно
-    private void printResultOfReadingMonthlyReports() {
-        System.out.println("\nЕжемесячные отчёты успешно считаны.\n");
     }
 
     //создаю массив только с доходами за месяц
@@ -117,10 +115,9 @@ class MonthlyReport {
         }
     }
 
-    //считывание всех месячных отчетов + печать результата + флаг
+    //считывание всех месячных отчетов + флаг
     public void getMonthlyReports() {
         readMonthlyReports();
-        printResultOfReadingMonthlyReports();
         monthReportsHaveNotBeenRead = false;
     }
 

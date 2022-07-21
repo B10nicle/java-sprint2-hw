@@ -14,10 +14,10 @@ public class Main {
                     annualReport.getAnnualReports();
                     break;
                 case "3":
-                    annualReport.printComparisonIfReportsAreOK();
+                    annualReport.printComparisonIfReportsAreOK(monthlyReport.monthlyReports);
                     break;
                 case "4":
-                    monthlyReport.printMonthlyInfoIfMonthlyReportsAreOK(monthlyReport.readMonthlyReports());
+                    monthlyReport.printMonthlyInfoIfMonthlyReportsAreOK(monthlyReport.monthlyReports);
                     break;
                 case "5":
                     annualReport.printAnnualInfoIfAnnualReportsAreOK();
